@@ -1,5 +1,5 @@
 # ToDo
-
+A Task Manager made with C#
 ## Features
 ● Add and Remove your tasks to list
 
