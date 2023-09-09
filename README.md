@@ -1,5 +1,5 @@
 # ToDo
-A Task Manager made with C#
+A Task Manager made with C# and Windows Forms
 
 <p align="center">
   <img src="https://github.com/svnomore/ToDo/blob/master/ToDo/icon.png?raw=true" alt="ToDo">

@@ -33,8 +33,7 @@
             textBox1 = new TextBox();
             button2 = new Button();
             listBox1 = new ListBox();
-            comboBox1 = new ComboBox();
-            textBox2 = new TextBox();
+            button3 = new Button();
             SuspendLayout();
             // 
             // button1
@@ -78,31 +77,16 @@
             listBox1.Size = new Size(767, 382);
             listBox1.TabIndex = 15;
             // 
-            // comboBox1
+            // button3
             // 
-            comboBox1.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-            comboBox1.DropDownStyle = ComboBoxStyle.DropDownList;
-            comboBox1.Font = new Font("Segoe UI", 9.75F, FontStyle.Regular, GraphicsUnit.Point);
-            comboBox1.FormattingEnabled = true;
-            comboBox1.ImeMode = ImeMode.NoControl;
-            comboBox1.Items.AddRange(new object[] { "8", "10", "12", "14", "16", "18", "20", "22" });
-            comboBox1.Location = new Point(727, 43);
-            comboBox1.Name = "comboBox1";
-            comboBox1.Size = new Size(52, 25);
-            comboBox1.TabIndex = 7;
-            comboBox1.SelectedIndexChanged += SettingsData;
-            // 
-            // textBox2
-            // 
-            textBox2.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-            textBox2.BackColor = SystemColors.Control;
-            textBox2.BorderStyle = BorderStyle.None;
-            textBox2.Location = new Point(621, 48);
-            textBox2.Name = "textBox2";
-            textBox2.RightToLeft = RightToLeft.Yes;
-            textBox2.Size = new Size(100, 15);
-            textBox2.TabIndex = 16;
-            textBox2.Text = "Font Size";
+            button3.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+            button3.Location = new Point(704, 44);
+            button3.Name = "button3";
+            button3.Size = new Size(75, 25);
+            button3.TabIndex = 17;
+            button3.Text = "Settings";
+            button3.UseVisualStyleBackColor = true;
+            button3.Click += OpenForm2;
             // 
             // ToDo
             // 
@@ -110,8 +94,7 @@
             AutoScaleMode = AutoScaleMode.Font;
             BackColor = SystemColors.ButtonFace;
             ClientSize = new Size(791, 480);
-            Controls.Add(textBox2);
-            Controls.Add(comboBox1);
+            Controls.Add(button3);
             Controls.Add(listBox1);
             Controls.Add(button2);
             Controls.Add(textBox1);
@@ -130,8 +113,7 @@
         private Button button1;
         private TextBox textBox1;
         private Button button2;
-        private ListBox listBox1;
-        private ComboBox comboBox1;
-        public TextBox textBox2;
+        public ListBox listBox1;
+        private Button button3;
     }
 }

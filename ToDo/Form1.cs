@@ -46,12 +46,8 @@ namespace ToDo
                     Console.WriteLine(ex);
                 }
             }
-
-            if (comboBox1.SelectedIndex == -1)
-            {
-                comboBox1.SelectedItem = File.ReadAllText(settingsFilePath);
-            }
         }
+
         private void AddTask(object sender, EventArgs e)
         {
             if (textBox1.TextLength != 0)
@@ -86,7 +82,6 @@ namespace ToDo
             try
             {
                 File.WriteAllLines(tasksFilePath, listBox1.Items.Cast<string>().ToArray());
-                File.WriteAllText(settingsFilePath, comboBox1.SelectedItem.ToString());
             }
             catch (Exception ex)
             {
@@ -108,10 +103,15 @@ namespace ToDo
             }
         }
 
-        private void SettingsData(object sender, EventArgs e)
+        public void LoadSettings()
         {
-            File.WriteAllText(settingsFilePath, comboBox1.SelectedItem.ToString());
             listBox1.Font = new Font("Arial", float.Parse(File.ReadAllText(settingsFilePath)));
+        }
+
+        private void OpenForm2(object sender, EventArgs e)
+        {
+            Form2 secondForm = new Form2();
+            secondForm.ShowDialog();
         }
     }
 }
