@@ -1,6 +1,6 @@
 ﻿namespace ToDo
 {
-    partial class Form2
+    partial class Settings
     {
         /// <summary>
         /// Required designer variable.
@@ -28,7 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form2));
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Settings));
             comboBox1 = new ComboBox();
             textBox2 = new TextBox();
             SuspendLayout();
