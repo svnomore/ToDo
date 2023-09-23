@@ -7,8 +7,11 @@ A Task Manager made with C# and Windows Forms
 
 ## Features
 ● Add and Remove your tasks to list
+
 ● Setting font size
+
 ● Deleted tasks list
+
 ● Reminder, run in background
 
 
