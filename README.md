@@ -1,5 +1,5 @@
 # ToDo
-A Task Manager made with C# and Windows Forms
+A Task Manager made with C# and Windows Forms for Windows OS
 
 <p align="center">
   <img src="https://github.com/svnomore/ToDo/blob/master/ToDo/icon.png?raw=true" alt="ToDo">
@@ -12,11 +12,11 @@ A Task Manager made with C# and Windows Forms
 
 ● Deleted tasks list
 
-● Reminder, run in background
+● Reminder
 
+● Run in background
 
-## Planned Features
-● Mark tasks
+● Startup
 
 ## How To Use
 Download latest version from "Releases", run setup.exe, follow the instructions.
