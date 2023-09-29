@@ -14,8 +14,8 @@ namespace ToDo
             }
             else
             {
-                DialogResult result = MessageBox.Show("It seems application is already running, multiple launches may cause errors, " +
-                "launch anyway?","Multiple instancing.", MessageBoxButtons.OKCancel, MessageBoxIcon.Warning);
+                DialogResult result = MessageBox.Show("It seems application is already running, multiple launches may" +
+                " cause errors, launch anyway?","Multiple instancing.", MessageBoxButtons.OKCancel, MessageBoxIcon.Warning);
                 if(result == DialogResult.OK)
                 {
                     ApplicationConfiguration.Initialize();

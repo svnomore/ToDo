@@ -2,43 +2,49 @@
 {
     public partial class DeletedList : Form
     {
-        private static string documentsPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "ToDo");
-        private string deletedFilePath = Path.Combine(documentsPath, "deletedtasks.txt");
-        private string settingsFilePath = Path.Combine(documentsPath, "settings.txt");
+        private static readonly string documentsPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "ToDo");
+        private readonly string deletedFilePath = Path.Combine(documentsPath, "deletedtasks.txt");
+        private readonly string tasksFilePath = Path.Combine(documentsPath, "tasks.txt");
+        private ToDo main = Application.OpenForms.OfType<ToDo>().FirstOrDefault();
 
         public DeletedList()
         {
             InitializeComponent();
-            string settings = File.ReadAllText(settingsFilePath);
-            string[] parameters = settings.Split(';');
-            foreach (string parameter in parameters)
+            try
             {
-                string[] parts = parameter.Split('=');
-                string paramName = parts[0].Trim();
-                string paramValue = parts[1].Trim();
-
-                switch (paramName)
-                {
-                    case "FontSize":
-                        int fontSize;
-                        if (int.TryParse(paramValue, out fontSize))
-                        {
-                            listBox1.Font = new Font("Arial", fontSize);
-                        }
-                        break;
-                }
+                listBox.Font = new Font("Arial", main.AppSettingsInstance.FontSize);
+                listBox.Items.AddRange(File.ReadAllLines(deletedFilePath));
             }
-
-            listBox1.Items.AddRange(File.ReadAllLines(deletedFilePath));
+            catch (Exception e)
+            {
+                MessageBox.Show($"Error while loading list {Environment.NewLine + e}", "Error", MessageBoxButtons.OK,
+                MessageBoxIcon.Error);
+            }
         }
 
         private void ClearDeletedTasks(object sender, EventArgs e)
         {
-            DialogResult result = MessageBox.Show("Are you sure?", "Delete?", MessageBoxButtons.OKCancel);
+            DialogResult result = MessageBox.Show("Are you sure?", "Delete?", MessageBoxButtons.OKCancel, MessageBoxIcon.Warning);
             if (result == DialogResult.OK)
             {
-                listBox1.Items.Clear();
+                listBox.Items.Clear();
                 File.WriteAllText(deletedFilePath, "");
+            }
+        }
+
+        private void Recover(object sender, EventArgs e)
+        {
+            try
+            {
+                File.AppendAllText(tasksFilePath,
+                   listBox.Items[listBox.SelectedIndex].ToString() + Environment.NewLine);
+                listBox.Items.RemoveAt(listBox.SelectedIndex);
+                File.WriteAllLines(deletedFilePath, listBox.Items.Cast<string>().ToArray());
+                main.LoadData();
+            }
+            catch (Exception)
+            {
+                MessageBox.Show("Select task to recover", "pls...", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
     }

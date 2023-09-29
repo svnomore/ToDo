@@ -1,79 +1,96 @@
+using Microsoft.Win32;
 namespace ToDo
 {
     public partial class ToDo : Form
     {
-        private static string documentsPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "ToDo");
-        private string tasksFilePath = Path.Combine(documentsPath, "tasks.txt");
-        private static string settingsFilePath = Path.Combine(documentsPath, "settings.txt");
-        private string deletedFilePath = Path.Combine(documentsPath, "deletedtasks.txt");
-        private bool ClosingCompletely = false;
+        private static readonly string documentsPath = Path.Combine
+            (Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments),"ToDo");
+        private readonly string tasksFilePath = Path.Combine(documentsPath, "tasks.txt");
+        private readonly string settingsFilePath = Path.Combine(documentsPath, "settings.txt");
+        private readonly string deletedFilePath = Path.Combine(documentsPath, "deletedtasks.txt");
+
+        private AppSettings appSettings = new();
+
+        public AppSettings AppSettingsInstance
+        {
+            get { return appSettings; }
+        }
 
         public ToDo()
         {
+            CheckFiles();
             InitializeComponent();
+            LoadData();
+            LoadSettings();
+        }
 
+        private void CheckFiles()
+        {
+            bool directory = false;
             if (!Directory.Exists(documentsPath))
             {
                 Directory.CreateDirectory(documentsPath);
+                directory = true;
             }
-
             if (!File.Exists(tasksFilePath))
             {
-                File.Create(tasksFilePath);
+                if (directory)
+                {
+                    using (File.Create(tasksFilePath)) { }
+                }
             }
-
             if (!File.Exists(settingsFilePath))
             {
-                File.Create(settingsFilePath);
+                CreateDefaultSettings();
             }
-
             if (!File.Exists(deletedFilePath))
             {
-                File.Create(deletedFilePath);
+                using (File.Create(deletedFilePath)) { }
             }
-            
-            LoadData();
         }
 
         private void AddTask(object? sender, EventArgs? e)
         {
-            if (textBox1.TextLength != 0)
+            string taskText = inputField.Text.Trim();
+            if (!string.IsNullOrWhiteSpace(taskText))
             {
-                listBox1.Items.Add(textBox1.Text);
-                textBox1.Clear();
+                taskListBox.Items.Add(taskText);
+                SaveData();
+                LoadData();
             }
             else
             {
                 MessageBox.Show("Write task to add.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
-
-            SaveData();
+            inputField.Clear();
         }
 
         private void RemoveTask(object? sender, EventArgs? e)
         {
             try
             {
-                File.AppendAllText(deletedFilePath, listBox1.Items[listBox1.SelectedIndex].ToString() + Environment.NewLine);
-                listBox1.Items.RemoveAt(listBox1.SelectedIndex);
+                File.AppendAllText(deletedFilePath,
+                    taskListBox.Items[taskListBox.SelectedIndex].ToString() + Environment.NewLine);
+                taskListBox.Items.RemoveAt(taskListBox.SelectedIndex);
+                SaveData();
+                LoadData();
             }
             catch (ArgumentOutOfRangeException)
             {
                 MessageBox.Show("Select task to remove.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
-
-            SaveData();
         }
 
         private void SaveData()
         {
             try
             {
-                File.WriteAllLines(tasksFilePath, listBox1.Items.Cast<string>().ToArray());
+                File.WriteAllLines(tasksFilePath, taskListBox.Items.Cast<string>().ToArray());
             }
-            catch (Exception ex)
+            catch (Exception e)
             {
-                MessageBox.Show(ex.ToString(), "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show($"Failed to save data {Environment.NewLine + e}", "Error",
+                MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
@@ -81,108 +98,97 @@ namespace ToDo
         {
             try
             {
-                timer1.Start();
-                listBox1.Items.Clear();
-                listBox1.Items.AddRange(File.ReadAllLines(tasksFilePath));
-                LoadSettings();
+                taskListBox.Items.Clear();
+                taskListBox.Items.AddRange(File.ReadAllLines(tasksFilePath));
             }
             catch (Exception ex)
             {
-                MessageBox.Show(ex.ToString(), "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show($"Error while loading data {Environment.NewLine + ex}",
+                "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
-        private void LoadSettings()
+        public void LoadSettings()
         {
             try
             {
-                string settings = File.ReadAllText(settingsFilePath);
-                string[] parameters = settings.Split(';');
-
-                foreach (string parameter in parameters)
+                using StreamReader reader = new(settingsFilePath);
                 {
-                    string[] parts = parameter.Split('=');
-                    string paramName = parts[0].Trim();
-                    string paramValue = parts[1].Trim();
+                    string settings = File.ReadAllText(settingsFilePath);
+                    string[] parameters = settings.Split(';');
 
-                    switch (paramName)
+                    foreach (string parameter in parameters)
                     {
-                        case "FontSize":
-                            listBox1.Font = new Font("Arial", float.Parse(paramValue));
-                            break;
+                        string[] parts = parameter.Split('=');
+                        string paramName = parts[0].Trim();
+                        string paramValue = parts[1].Trim();
 
-                        case "WorkInBackground":
-                            bool notifyEnabled = Convert.ToInt32(paramValue) == 0;
-                            ClosingCompletely = notifyEnabled;
-                            break;
+                        switch (paramName)
+                        {
+                            case "FontSize":
+                                AppSettingsInstance.FontSize = float.Parse(paramValue);
+                                taskListBox.Font = new Font("Arial", AppSettingsInstance.FontSize);
+                                break;
 
-                        case "RemindIndex":
-                            switch(paramValue)
-                            {
-                                case "0":
-                                    timer1.Stop();
+                            case "WorkInBackground":
+                                AppSettingsInstance.WorkInBackground = Convert.ToInt32(paramValue) == 1;
                                 break;
-                                case "1":
-                                    SetTimerInterval(15);
+
+                            case "RemindIndex":
+                                AppSettingsInstance.RemindIndex = Convert.ToInt32(paramValue);
+                                Reminder();
                                 break;
-                                case "2":
-                                    SetTimerInterval(30);
+
+                            case "Startup":
+                                AppSettingsInstance.Startup = Convert.ToInt32(paramValue) == 1;
+                                Startup();
                                 break;
-                                case "3":
-                                    SetTimerInterval(60);
-                                break;
-                                case "4":
-                                    SetTimerInterval(120);
-                                break;
-                                case "5":
-                                    SetTimerInterval(240);
-                                break;
-                                case "6":
-                                    SetTimerInterval(480);
-                                break;
-                            }
-                        break;
+                        }
                     }
                 }
             }
             catch (Exception e)
             {
-                MessageBox.Show("Error occurred while loading data, creating new..." + Environment.NewLine + e, "Error",
+                MessageBox.Show("Error occurred while loading data, creating new settings..." + Environment.NewLine + e, "Error",
                 MessageBoxButtons.OK, MessageBoxIcon.Error);
                 CreateDefaultSettings();
-                LoadData();
+                LoadSettings();
             }
         }
 
-        private void OpenForm2(object? sender, EventArgs? e)
+        private void OpenSettings(object? sender, EventArgs? e)
         {
-            Settings secondForm = new();
-            secondForm.ShowDialog();
+            Settings settings = new();
+            settings.ShowDialog();
         }
 
-        private void OpenForm3(object? sender, EventArgs? e)
+        private void OpenDeletedList(object? sender, EventArgs? e)
         {
-            DeletedList thirdForm = new();
-            thirdForm.ShowDialog();
+            DeletedList deleted = new();
+            deleted.ShowDialog();
         }
 
-        private void DeleteTaskOnButton(object? sender, KeyEventArgs e)
+        private void ManageTaskOnButton(object? sender, KeyEventArgs e)
         {
             if (e.KeyCode == Keys.Delete)
             {
                 RemoveTask(null, null);
             }
+            if (e.KeyCode == Keys.Enter)
+            {
+                AddTask(null, null);
+            }
         }
 
         private void UserProgramClosing(object? sender, FormClosingEventArgs e)
         {
-            if (!ClosingCompletely)
+            if (AppSettingsInstance.WorkInBackground)
             {
                 if (e.CloseReason == CloseReason.UserClosing)
                 {
                     e.Cancel = true;
                     Hide();
-                    notifyIcon1.Visible = true;
+                    notifyIcon.Visible = true;
                 }
             }
         }
@@ -190,34 +196,86 @@ namespace ToDo
         private void OnNotifyShowButtonClick(object sender, EventArgs e)
         {
             Show();
-            notifyIcon1.Visible = false;
+            notifyIcon.Visible = false;
         }
 
         private void OnNotifyCloseButtonClick(object sender, EventArgs e)
         {
-            ClosingCompletely = true;
-            notifyIcon1.Visible = false;
+            AppSettingsInstance.WorkInBackground = false;
+            notifyIcon.Visible = false;
             Show();
             Close();
         }
 
         public void CreateDefaultSettings()
         {
-            File.WriteAllText(settingsFilePath, "FontSize=12; WorkInBackground=1; RemindIndex=0");
+            using StreamWriter writer = new(settingsFilePath);
+            writer.Write("FontSize=12; WorkInBackground=1; RemindIndex=0; Startup=1");
         }
 
-        private void Reminder(object sender, EventArgs e)
+        private void Remind(object sender, EventArgs e)
         {
-            if (!string.IsNullOrWhiteSpace(File.ReadAllText(tasksFilePath)))
+            string tasks = File.ReadAllText(tasksFilePath);
+            if (!string.IsNullOrWhiteSpace(tasks))
             {
-                MessageBox.Show($"Hello, you have unfinished tasks: {Environment.NewLine} {File.ReadAllText(tasksFilePath)}",
-                    "Reminder", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                MessageBox.Show($"Hello, you have unfinished tasks: {Environment.NewLine + tasks}",
+                "Reminder", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+        }
+
+        private void Reminder()
+        {
+            timer.Start();
+            switch (AppSettingsInstance.RemindIndex)
+            {
+                case 0:
+                    timer.Stop();
+                    break;
+                case 1:
+                    SetTimerInterval(15);
+                    break;
+                case 2:
+                    SetTimerInterval(30);
+                    break;
+                case 3:
+                    SetTimerInterval(60);
+                    break;
+                case 4:
+                    SetTimerInterval(120);
+                    break;
+                case 5:
+                    SetTimerInterval(240);
+                    break;
+                case 6:
+                    SetTimerInterval(480);
+                    break;
             }
         }
 
         private int SetTimerInterval(int minutes)
         {
-            return timer1.Interval = minutes * 60 * 1000;
+            return timer.Interval = minutes * 60 * 1000;
         }
+
+        private void Startup()
+        {
+            RegistryKey registryKey = Registry.CurrentUser.OpenSubKey("SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run", true);
+            if (AppSettingsInstance.Startup)
+            {
+                registryKey.SetValue("ToDo", Application.ExecutablePath);
+            }
+            else
+            {
+                registryKey.DeleteValue("ToDo", false);
+            }
+        }
+    }
+
+    public class AppSettings
+    {
+        public float FontSize { get; set; }
+        public bool WorkInBackground { get; set; }
+        public int RemindIndex { get; set; }
+        public bool Startup { get; set; }
     }
 }

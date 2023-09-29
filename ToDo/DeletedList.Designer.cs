@@ -29,38 +29,49 @@
         private void InitializeComponent()
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(DeletedList));
-            listBox1 = new ListBox();
-            button1 = new Button();
+            listBox = new ListBox();
+            clearButton = new Button();
+            recoverButton = new Button();
             SuspendLayout();
             // 
-            // listBox1
+            // listBox
             // 
-            listBox1.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
-            listBox1.FormattingEnabled = true;
-            listBox1.ItemHeight = 17;
-            listBox1.Location = new Point(12, 46);
-            listBox1.Name = "listBox1";
-            listBox1.SelectionMode = SelectionMode.None;
-            listBox1.Size = new Size(624, 361);
-            listBox1.TabIndex = 0;
+            listBox.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
+            listBox.FormattingEnabled = true;
+            listBox.ItemHeight = 17;
+            listBox.Location = new Point(12, 46);
+            listBox.Name = "listBox";
+            listBox.Size = new Size(624, 361);
+            listBox.TabIndex = 0;
             // 
-            // button1
+            // clearButton
             // 
-            button1.Location = new Point(12, 12);
-            button1.Name = "button1";
-            button1.Size = new Size(75, 28);
-            button1.TabIndex = 1;
-            button1.Text = "Clear";
-            button1.UseVisualStyleBackColor = true;
-            button1.Click += ClearDeletedTasks;
+            clearButton.Location = new Point(12, 12);
+            clearButton.Name = "clearButton";
+            clearButton.Size = new Size(75, 28);
+            clearButton.TabIndex = 1;
+            clearButton.Text = "Clear";
+            clearButton.UseVisualStyleBackColor = true;
+            clearButton.Click += ClearDeletedTasks;
+            // 
+            // recoverButton
+            // 
+            recoverButton.Location = new Point(93, 12);
+            recoverButton.Name = "recoverButton";
+            recoverButton.Size = new Size(75, 28);
+            recoverButton.TabIndex = 2;
+            recoverButton.Text = "Recover";
+            recoverButton.UseVisualStyleBackColor = true;
+            recoverButton.Click += Recover;
             // 
             // DeletedList
             // 
             AutoScaleDimensions = new SizeF(7F, 17F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(648, 419);
-            Controls.Add(button1);
-            Controls.Add(listBox1);
+            Controls.Add(recoverButton);
+            Controls.Add(clearButton);
+            Controls.Add(listBox);
             Font = new Font("Segoe UI", 9.75F, FontStyle.Regular, GraphicsUnit.Point);
             Icon = (Icon)resources.GetObject("$this.Icon");
             MaximizeBox = false;
@@ -74,7 +85,8 @@
 
         #endregion
 
-        private ListBox listBox1;
-        private Button button1;
+        private ListBox listBox;
+        private Button clearButton;
+        private Button recoverButton;
     }
 }

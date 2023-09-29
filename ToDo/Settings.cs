@@ -2,14 +2,14 @@
 {
     public partial class Settings : Form
     {
-        private static readonly string documentsPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "ToDo");
-        private static string settingsFilePath = Path.Combine(documentsPath, "settings.txt");
-#pragma warning disable CS8601
-        private readonly ToDo form1 = Application.OpenForms.OfType<ToDo>().FirstOrDefault();
+        private static readonly string documentsPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments),"ToDo");
+        private readonly string settingsFilePath = Path.Combine(documentsPath, "settings.txt");
+        private ToDo main = Application.OpenForms.OfType<ToDo>().FirstOrDefault();
 
-        private static int fontSize;
-        private static bool workInBackground;
-        private static int remindIndex;
+        private float fontSize;
+        private bool workInBackground;
+        private int remindIndex;
+        private bool startup;
 
         public Settings()
         {
@@ -21,51 +21,36 @@
         private void SaveData(object sender, FormClosingEventArgs e)
         {
             CheckParametres();
-            string settings = $"FontSize={fontSize}; WorkInBackground={(workInBackground ? 1 : 0)}; RemindIndex = {remindIndex}";
+            string settings = $"FontSize={fontSize}; WorkInBackground={(workInBackground ? 1 : 0)}; RemindIndex = {remindIndex}; Startup={(startup ? 1 : 0)}";
             File.WriteAllText(settingsFilePath, settings);
-            form1.LoadData();
+            main.LoadSettings();
         }
 
         private void CheckParametres()
         {
-            fontSize = Convert.ToInt32(comboBox1.SelectedItem);
-            workInBackground = checkBox1.Checked;
-            remindIndex = comboBox2.SelectedIndex;
+            fontSize = Convert.ToInt32(fontSizeComboBox.SelectedItem);
+            workInBackground = WorkInBackCheckBox.Checked;
+            remindIndex = reminderComboBox.SelectedIndex;
+            startup = startupCheckBox.Checked;
         }
 
         private void ReadSettings()
         {
             try
             {
-                string settings = File.ReadAllText(settingsFilePath);
-                string[] parameters = settings.Split(';');
+                fontSize = main.AppSettingsInstance.FontSize;
+                workInBackground = main.AppSettingsInstance.WorkInBackground;
+                remindIndex = main.AppSettingsInstance.RemindIndex;
+                startup = main.AppSettingsInstance.Startup;
 
-                foreach (string parameter in parameters)
-                {
-                    string[] parts = parameter.Split('=');
-                    string paramName = parts[0].Trim();
-                    string paramValue = parts[1].Trim();
-
-                    switch (paramName)
-                    {
-                        case "FontSize":
-                            comboBox1.SelectedItem = paramValue;
-                            break;
-
-                        case "WorkInBackground":
-                            workInBackground = (Convert.ToInt32(paramValue) == 1);
-                            checkBox1.Checked = workInBackground;
-                            break;
-
-                        case "RemindIndex":
-                            comboBox2.SelectedIndex = Convert.ToInt32(paramValue);
-                            break;
-                    }
-                }
+                fontSizeComboBox.SelectedItem = Convert.ToString(fontSize);
+                WorkInBackCheckBox.Checked = workInBackground;
+                reminderComboBox.SelectedIndex = remindIndex;
+                startupCheckBox.Checked = startup;
             }
             catch (Exception e)
             {
-                MessageBox.Show("Error occurred reading data" + Environment.NewLine + e, "Error",
+                MessageBox.Show("Error occurred while reading data" + Environment.NewLine + e, "Error",
                 MessageBoxButtons.OK, MessageBoxIcon.Error);
                 ReadSettings();
             }
