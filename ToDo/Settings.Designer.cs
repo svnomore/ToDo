@@ -56,6 +56,7 @@
             fontSizeText.BorderStyle = BorderStyle.None;
             fontSizeText.Location = new Point(12, 12);
             fontSizeText.Name = "fontSizeText";
+            fontSizeText.ReadOnly = true;
             fontSizeText.Size = new Size(59, 18);
             fontSizeText.TabIndex = 17;
             fontSizeText.Text = " Font Size";
@@ -78,8 +79,10 @@
             reminderText.BorderStyle = BorderStyle.None;
             reminderText.Location = new Point(12, 70);
             reminderText.Name = "reminderText";
+            reminderText.ReadOnly = true;
             reminderText.Size = new Size(87, 18);
             reminderText.TabIndex = 20;
+            reminderText.TabStop = false;
             reminderText.Text = " Remind every";
             // 
             // reminderComboBox
@@ -98,7 +101,7 @@
             // 
             startupCheckBox.AutoSize = true;
             startupCheckBox.CheckAlign = ContentAlignment.MiddleRight;
-            startupCheckBox.Location = new Point(12, 94);
+            startupCheckBox.Location = new Point(12, 98);
             startupCheckBox.Name = "startupCheckBox";
             startupCheckBox.Size = new Size(201, 21);
             startupCheckBox.TabIndex = 22;
@@ -111,7 +114,7 @@
             warningText.BorderStyle = BorderStyle.None;
             warningText.Font = new Font("Segoe UI", 8.25F, FontStyle.Regular, GraphicsUnit.Point);
             warningText.ForeColor = SystemColors.WindowFrame;
-            warningText.Location = new Point(12, 112);
+            warningText.Location = new Point(12, 116);
             warningText.Name = "warningText";
             warningText.Size = new Size(180, 15);
             warningText.TabIndex = 23;
@@ -122,7 +125,7 @@
             // 
             AutoScaleDimensions = new SizeF(7F, 17F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(290, 136);
+            ClientSize = new Size(290, 138);
             Controls.Add(warningText);
             Controls.Add(startupCheckBox);
             Controls.Add(reminderComboBox);

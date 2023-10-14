@@ -67,18 +67,16 @@ namespace ToDo
 
         private void RemoveTask(object? sender, EventArgs? e)
         {
-            try
-            {
-                File.AppendAllText(deletedFilePath,
-                    taskListBox.Items[taskListBox.SelectedIndex].ToString() + Environment.NewLine);
-                taskListBox.Items.RemoveAt(taskListBox.SelectedIndex);
-                SaveData();
-                LoadData();
-            }
-            catch (ArgumentOutOfRangeException)
+            if (taskListBox.SelectedIndex == -1)
             {
                 MessageBox.Show("Select task to remove.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
             }
+            File.AppendAllText(deletedFilePath,
+                taskListBox.Items[taskListBox.SelectedIndex].ToString() + Environment.NewLine);
+            taskListBox.Items.RemoveAt(taskListBox.SelectedIndex);
+            SaveData();
+            LoadData();
         }
 
         private void SaveData()
@@ -252,9 +250,9 @@ namespace ToDo
             }
         }
 
-        private int SetTimerInterval(int minutes)
+        private void SetTimerInterval(int minutes)
         {
-            return timer.Interval = minutes * 60 * 1000;
+            timer.Interval = minutes * 60 * 1000;
         }
 
         private void Startup()

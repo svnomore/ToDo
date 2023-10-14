@@ -2,7 +2,7 @@
 {
     public partial class Settings : Form
     {
-        private static readonly string documentsPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments),"ToDo");
+        private static readonly string documentsPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "ToDo");
         private readonly string settingsFilePath = Path.Combine(documentsPath, "settings.txt");
         private ToDo main = Application.OpenForms.OfType<ToDo>().FirstOrDefault();
 
